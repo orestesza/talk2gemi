@@ -24,7 +24,9 @@ void app_main(void){
     ESP_ERROR_CHECK(audio_stream_init());
     ESP_ERROR_CHECK(wifi_portal_init(wifi_status));
     ESP_LOGI("memory","before BLE heap=%u largest=%u",(unsigned)esp_get_free_heap_size(),(unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-    ESP_ERROR_CHECK(ble_link_init());
+    if(!wifi_portal_has_config() && (app_settings.token[0] || app_settings.preference == 2)){
+        ESP_ERROR_CHECK(ble_link_init());
+    }
     transport_init();
     extern void usb_diagnostics_start(void);
     usb_diagnostics_start();

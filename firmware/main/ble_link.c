@@ -294,9 +294,15 @@ static void receive_task(void *arg){
     rx_task_handle=NULL;
     vTaskDelete(NULL);
 }
+static bool ble_initialized = false;
 esp_err_t ble_link_init(void){
-    tx_lock=xSemaphoreCreateMutex();wire_lock=xSemaphoreCreateMutex();write_done=xSemaphoreCreateBinary();frame_ack=xSemaphoreCreateBinary();
-    rx_queue=xQueueCreate(3,MAX_FRAME);
+    if(ble_initialized)return ESP_OK;
+    ble_stopping = false;
+    if(!tx_lock) tx_lock=xSemaphoreCreateMutex();
+    if(!wire_lock) wire_lock=xSemaphoreCreateMutex();
+    if(!write_done) write_done=xSemaphoreCreateBinary();
+    if(!frame_ack) frame_ack=xSemaphoreCreateBinary();
+    if(!rx_queue) rx_queue=xQueueCreate(3,MAX_FRAME);
     if(!tx_lock||!wire_lock||!write_done||!frame_ack||!rx_queue)return ESP_ERR_NO_MEM;
     ESP_RETURN_ON_ERROR(nimble_port_init(),"BLE","NimBLE init");
     int size=opus_decoder_get_size(1);
@@ -315,6 +321,8 @@ esp_err_t ble_link_init(void){
     ble_store_config_init();ble_att_set_preferred_mtu(247);
     nimble_port_freertos_init(host_task);
     if(xTaskCreate(receive_task,"ble_audio",4096,NULL,4,&rx_task_handle)!=pdPASS)return ESP_ERR_NO_MEM;
+    ble_initialized = true;
+    ESP_LOGI("BLE", "NimBLE started (free heap=%u)", (unsigned)esp_get_free_heap_size());
     return ESP_OK;
 }
 void ble_link_scan(void){
@@ -335,8 +343,9 @@ void ble_link_reconnect(void){if(!app_settings.token[0])return;auto_reconnect=tr
 void ble_link_forget(void){if(ready)ble_link_send_json("{\"type\":\"forget\"}");terminate();ble_store_clear();}
 bool ble_link_connected(void){return ready;}
 int ble_link_rssi(void){int8_t rssi;if(!synced||conn==BLE_HS_CONN_HANDLE_NONE||ble_gap_conn_rssi(conn,&rssi))return 0;return rssi;}
+bool ble_link_is_active(void){return ble_initialized;}
 void ble_link_stop(void){
-    if(ble_stopping)return;
+    if(!ble_initialized)return;
     ble_stopping=true;
     auto_reconnect=false;
     if(synced){
@@ -350,6 +359,8 @@ void ble_link_stop(void){
     if(nimble_port_stop()==0){
         nimble_port_deinit();
     }
+    ble_initialized=false;
+    ESP_LOGI("BLE", "NimBLE stopped (free heap=%u)", (unsigned)esp_get_free_heap_size());
 }
 void ble_link_disconnect(void){auto_reconnect=false;terminate();}
 bool ble_link_confirm_pairing(int code){

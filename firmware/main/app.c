@@ -4,6 +4,7 @@
 #include "transport.h"
 #include "audio_stream.h"
 #include "wifi_portal.h"
+#include "ws_client.h"
 #include "bsp_display.h"
 #include "bsp_audio.h"
 #include "bsp_battery.h"
@@ -127,7 +128,13 @@ static void volume_change(int delta){
     int value=app_settings.volume+delta;if(value<0)value=0;if(value>100)value=100;
     app_settings.volume=value;volume_dirty=true;volume_until=esp_timer_get_time()+1500000;
 }
-static void home(void){page=0;selection=0;}
+static void home(void){
+    bool was_ble_page = (page == 4 || page == 5);
+    page=0;selection=0;
+    if(was_ble_page && wifi_portal_has_config() && app_settings.preference != 2){
+        transport_reconnect();
+    }
+}
 static void forget_host(void){
     selecting_mac=true;
     ble_link_forget();app_settings.host_id[0]=app_settings.mac_name[0]=app_settings.token[0]=0;
@@ -137,9 +144,13 @@ static void confirm(void){
     if(page==1||page==9){home();return;}
     if(page==2){static const int pages[]={3,6,7,8,9};page=pages[selection];selection=0;return;}
     if(page==3){
-        if(selection==0){app_settings.preference=(app_settings.preference+1)%3;app_save();}
+        if(selection==0){app_settings.preference=(app_settings.preference+1)%3;app_save();transport_reconnect();}
         else if(selection==1){wifi_portal_start_ap_web();home();}
-        else if(selection==2){page=4;selection=0;}
+        else if(selection==2){
+            page=4;selection=0;
+            ws_client_stop(); wifi_portal_stop();
+            if(!ble_link_is_active()) ble_link_init();
+        }
         else if(selection==3)transport_reconnect();
         else {page=selection==4?10:11;selection=0;}
     }else if(page==10||page==11){
@@ -150,6 +161,8 @@ static void confirm(void){
             if(!queued)app_set_state(UI_STATE_ERROR,"Cannot forget Wi-Fi now");
         }else{forget_host();home();app_set_state(UI_STATE_READY,"Bluetooth forgotten. Select a Mac.");}
     }else if(page==4){
+        ws_client_stop(); wifi_portal_stop();
+        if(!ble_link_is_active()) ble_link_init();
         if(selection==0){page=5;selection=0;ble_link_scan();}
         else if(selection==1)ble_link_reconnect();
         else if(selection==2){forget_host();page=5;selection=0;ble_link_scan();}

@@ -47,6 +47,12 @@ esp_err_t ws_client_start(const char *host,int port){
 }
 bool ws_client_send_json(const char *text){return client&&ready&&esp_websocket_client_send_text(client,text,strlen(text),pdMS_TO_TICKS(1000))>=0;}
 void ws_client_send_ptt(bool active){ws_client_send_json(active?"{\"type\":\"start\"}":"{\"type\":\"stop\"}");}
-void ws_client_send_audio(const void *pcm,size_t len){if(client&&ready&&esp_websocket_client_send_bin(client,pcm,len,pdMS_TO_TICKS(1000))<0){ready=false;app_link_status(1,false);}}
+void ws_client_send_audio(const void *pcm,size_t len){
+    if(!client||!ready)return;
+    int ret=esp_websocket_client_send_bin(client,pcm,len,pdMS_TO_TICKS(1000));
+    if(ret<0&&!esp_websocket_client_is_connected(client)){
+        ready=false;app_link_status(1,false);
+    }
+}
 bool ws_client_is_connected(void){return ready;}
 void ws_client_stop(void){if(client){ready=false;esp_websocket_client_stop(client);esp_websocket_client_destroy(client);client=NULL;app_link_status(1,false);}}

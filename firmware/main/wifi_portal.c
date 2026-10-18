@@ -577,3 +577,13 @@ esp_err_t wifi_portal_forget_sta(void) {
     if (s_cb) s_cb(WIFI_STATUS_IDLE, "Wi-Fi credentials forgotten");
     return err;
 }
+
+void wifi_portal_stop(void) {
+    if (s_setup_mode) return;
+    esp_wifi_disconnect();
+    esp_wifi_stop();
+    s_sta_started = false;
+    s_sta_ip_str[0] = 0;
+    xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT);
+    ESP_LOGI(TAG, "Wi-Fi STA stopped; credentials preserved (free heap=%u)", (unsigned)esp_get_free_heap_size());
+}

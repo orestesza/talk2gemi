@@ -27,6 +27,9 @@ esp_err_t wifi_portal_forget_sta(void);
 // 连接已有配置的 Wi-Fi (超时单位为秒)
 esp_err_t wifi_portal_connect_sta(int timeout_sec);
 
+// 暂停 Wi-Fi 运行时连接 (保留所有 NVS 凭据配置)
+void wifi_portal_stop(void);
+
 // 启动 SoftAP + Web 配网服务器
 esp_err_t wifi_portal_start_ap_web(void);
 

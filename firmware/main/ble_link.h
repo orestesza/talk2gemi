@@ -15,6 +15,7 @@ int ble_link_rssi(void);
 bool ble_link_send_json(const char *json);
 bool ble_link_send_audio(const void *pcm,size_t length);
 void ble_link_stop(void);
+bool ble_link_is_active(void);
 void ble_link_disconnect(void);
 bool ble_link_confirm_pairing(int code);
 void ble_link_reject_pairing(void);
