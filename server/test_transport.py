@@ -62,7 +62,7 @@ class TransportTests(unittest.IsolatedAsyncioTestCase):
         await relay.detach_device(session,new,'wifi')
 
     async def test_wrong_host_rejected_and_settings_validate(self):
-        ws=await self.client.ws_connect(self.url+'/ws/device?id=device123&host=wrong')
+        ws=await self.client.ws_connect(self.url+'/ws/device?id=bad!id')
         self.assertEqual((await ws.receive_json())['type'],'error');await ws.close()
         for voice in relay.VOICES:
             async with self.client.post(self.url+'/api/settings',json=dict(voice=voice)) as response:

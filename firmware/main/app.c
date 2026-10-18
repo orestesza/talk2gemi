@@ -83,7 +83,7 @@ void app_receive_json(const char *data,int length,int channel){
     if(!strcmp(type,"hello")||!strcmp(type,"paired")){
         if(channel==2)pairing_until=0;
         const char *host=str(r,"host_id");
-        if(app_settings.host_id[0]&&strcmp(app_settings.host_id,host)){
+        if(channel==2 && app_settings.host_id[0]&&strcmp(app_settings.host_id,host)){
             app_set_state(UI_STATE_ERROR,"Different Mac: Change Mac first");cJSON_Delete(r);return;
         }
         snprintf(app_settings.host_id,sizeof(app_settings.host_id),"%s",host);

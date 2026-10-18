@@ -1061,9 +1061,6 @@ async def v2_device_handler(request):
     await ws.prepare(request)
     session = None
     try:
-        expected = request.query.get("host", "")
-        if expected and expected != settings.data["host_id"]:
-            raise ValueError("Selected Mac identity does not match")
         session = await attach_device(ws, request.query.get("id", ""), "wifi", request.remote)
         async for msg in ws:
             try:
