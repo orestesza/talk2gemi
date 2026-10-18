@@ -1,5 +1,7 @@
 # talk2gemi
 
+[English](README.en.md) · [更新日志 (CHANGELOG.md)](CHANGELOG.md) · [版本归档](releases/README.md)
+
 talk2gemi 是一个针对 **FoloToy AI Passport**（基于 ESP32-C3 芯片）硬件名片的开源固件与 Mac 伴侣端项目。通过蓝牙低功耗 (BLE) 将名片硬件与 Mac 伴侣程序相连，并将语音对讲实时接入 Google Gemini 3.8 Live API，实现随身携带的实体按键语音终端。
 
 ---

@@ -1,5 +1,7 @@
 # talk2gemi
 
+[中文文档](README.md) · [Changelog (CHANGELOG.en.md)](CHANGELOG.en.md) · [Releases Archive](releases/README.en.md)
+
 talk2gemi is an open-source firmware and macOS companion project for the **FoloToy AI Passport** (ESP32-C3 hardware badge). It connects the badge to a Mac via Bluetooth Low Energy (BLE) and relays two-way voice communication to Google's Gemini 3.8 Live API in real time, creating a dedicated Push-to-Talk (PTT) pocket badge.
 
 ---
