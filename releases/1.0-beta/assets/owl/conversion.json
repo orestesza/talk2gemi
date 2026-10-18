@@ -1,0 +1,9 @@
+{
+  "size": 80,
+  "frames": 6,
+  "colors": 13,
+  "storage": "RGB565 const Flash, no frame decode buffer",
+  "source_size": 80,
+  "display_size": 160,
+  "frame_bytes": 51200
+}

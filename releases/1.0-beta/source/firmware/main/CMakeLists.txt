@@ -1,0 +1,32 @@
+idf_component_register(
+    SRCS
+        "main.c"
+        "app.c"
+        "transport.c"
+        "ble_link.c"
+        "ima_codec.c"
+        "usb_diagnostics.c"
+        "wifi_portal.c"
+        "ui.c"
+        "owl_assets.c"
+        "audio_stream.c"
+        "ws_client.c"
+    INCLUDE_DIRS
+        "."
+    REQUIRES
+        esp_app_format
+        bt
+        esp_driver_usb_serial_jtag
+        esp_timer
+        esp_lvgl_port
+        bsp
+        esp_wifi
+        esp_event
+        esp_netif
+        esp_http_server
+        esp_websocket_client
+        nvs_flash
+        json
+        lvgl
+        esp-opus
+)

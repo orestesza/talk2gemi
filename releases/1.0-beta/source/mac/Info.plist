@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleIdentifier</key><string>local.talk2gemi.companion</string>
+<key>CFBundleName</key><string>talk2gemi</string>
+<key>CFBundleExecutable</key><string>Talk2Gemi</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleShortVersionString</key><string>2.0.0</string>
+<key>LSMinimumSystemVersion</key><string>13.0</string>
+<key>CFBundleVersion</key><string>200</string>
+<key>LSUIElement</key><true/>
+<key>NSLocalNetworkUsageDescription</key><string>Relay audio between your talk2gemi device and this Mac over your local network.</string>
+<key>NSBluetoothAlwaysUsageDescription</key><string>Connect your talk2gemi device and relay microphone and reply audio.</string>
+<key>NSBluetoothPeripheralUsageDescription</key><string>Advertise your selected Mac to your talk2gemi device.</string>
+</dict></plist>

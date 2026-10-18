@@ -1,0 +1,31 @@
+{
+  "name": "talk2gemi",
+  "release_version": "1.0-beta",
+  "semver": "1.0.0-beta",
+  "release_type": "Beta Release Candidate",
+  "archived_at": "2026-10-18T16:45:00+08:00",
+  "embedded_firmware_version": "2.0.0-dev",
+  "application_file": "firmware/talk2gemi_v1.0-beta.bin",
+  "application_offset": "0x10000",
+  "application_bytes": 2161712,
+  "application_sha256": "446d99097c7c0762fb59639aa2fdc1bc817d9875eb978630585eed049cb39a75",
+  "target_chip": "esp32c3",
+  "flash_size_bytes": 8388608,
+  "target_mac": "4c:11:ae:2f:ba:2c",
+  "esp_idf_version": "5.5.3",
+  "server_python_version": "3.11.17",
+  "host_tests_passed": 43,
+  "dist_installer": {
+    "dmg": "mac/Talk2Gemi.dmg",
+    "dmg_sha256": "7c9c7c54fb1d4b521c89b4c1716622647605b54ca3cbf42409806c97553be53c",
+    "zip": "mac/talk2gemi-mac-arm64.zip",
+    "zip_sha256": "f79c9ecdfc157457a3f24b7ab3828e0fafc3a858fb1758e5ac792790665ebbb6"
+  },
+  "physical_acceptance": {
+    "confirmed_by_user": true,
+    "long_recitation_test": "《卖炭翁》 continuous 36.5s audio playback (1,168,320 bytes, 47 frames) completed without truncation",
+    "menu_bar_icon": "Black snowy owl template icon",
+    "card_firmware_backup": "Muse firmware backup archived in talk2gemi/backup/muse/"
+  },
+  "secrets_included": false
+}

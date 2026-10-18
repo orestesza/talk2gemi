@@ -1,0 +1,454 @@
+{
+  "CHANGELOG.en.md": {
+    "bytes": 3734,
+    "sha256": "fc4f17838c17989796f1277cba13c0fc8f4c315ae821395d07369144bf183d64"
+  },
+  "CHANGELOG.md": {
+    "bytes": 3883,
+    "sha256": "5357049555af22a1ca497f1d9cf05056379847e0fe15b1b38274550150cc6df9"
+  },
+  "LICENSE": {
+    "bytes": 1079,
+    "sha256": "17212666d6b602c2dff3265ccd3a1858060ef9e49cc075556a2c1ca3be2c4b6b"
+  },
+  "README.en.md": {
+    "bytes": 9521,
+    "sha256": "3c51c88658f28ea1c3d4d85bc77e1f90e628d30e9cdeb762641a0bd9346945de"
+  },
+  "README.md": {
+    "bytes": 9482,
+    "sha256": "05e2907276056bca3c31cc5a131edfcb143c4b98c6cfdf5cd750be7f777c5256"
+  },
+  "assets/owl/README.md": {
+    "bytes": 1657,
+    "sha256": "9a1cb0c11509247e4f831885e787088053f1ea6429803525333f5c88543806c4"
+  },
+  "assets/owl/approved-concept.png": {
+    "bytes": 1366196,
+    "sha256": "f8d2901bdb56f8d0b1f77efbb6dcbb907769b8b650e49ba5431f1a2fdd05e899"
+  },
+  "assets/owl/atlas-alpha-attempt.png": {
+    "bytes": 1509684,
+    "sha256": "6fe9006719c39e8875aca47c85c7ab2a9aa2c1edd7aa1becf65a3e7408d41a60"
+  },
+  "assets/owl/atlas-draft.png": {
+    "bytes": 1512467,
+    "sha256": "1b97a9869aaf21c46520bdb560d7b67b3d8300b13ec7445a2ca0ed81d403f12a"
+  },
+  "assets/owl/conversion.json": {
+    "bytes": 174,
+    "sha256": "6a4851e5f91362a7b92c5f4d08fe84b55fe415ede200eacb8ea2d315097ebcb7"
+  },
+  "assets/owl/frame-0.png": {
+    "bytes": 3395,
+    "sha256": "e87304e74cb0dbf72d5364afdf0b9a7bf677c637894c8e0e4c4d7464bcfcbcff"
+  },
+  "assets/owl/frame-1.png": {
+    "bytes": 3506,
+    "sha256": "ddcbfc6ced817fc702635c64b793e2030e94b802c004cf53002a3556db1679d8"
+  },
+  "assets/owl/frame-2.png": {
+    "bytes": 3788,
+    "sha256": "cf0abfd9d68253181df2ab03a89f251df518c7337177975d21c6c108f1ecea81"
+  },
+  "assets/owl/frame-3.png": {
+    "bytes": 3391,
+    "sha256": "93323f6f12c1ae0ed7591fb63a7911200f6c666f674592ad15aa570f254e63b9"
+  },
+  "assets/owl/frame-4.png": {
+    "bytes": 3431,
+    "sha256": "a80b267bca8a681ff214752238363caea493d46dcc81e4ce19a9f67313b36471"
+  },
+  "assets/owl/frame-5.png": {
+    "bytes": 3028,
+    "sha256": "baac1cad3a74edad802c440aabe0a1511ff599ad4f9b65e434c2b967c4c012e2"
+  },
+  "assets/owl/frames-80x80-strip.png": {
+    "bytes": 4958,
+    "sha256": "b7f56e566597e55615b5d47624bd99a4c8f900d254e4a5e501d4a188f7c09ac1"
+  },
+  "assets/owl/frames-preview.png": {
+    "bytes": 20182,
+    "sha256": "9f7d442260a69b625cd46631d0423070a67c992c9d5e3aa7a90ec361c9a10e90"
+  },
+  "assets/owl/layout-reference.png": {
+    "bytes": 1443106,
+    "sha256": "ceec99fc5d9ab4270b04deefaa196b3a9f26f7c351ddc7fde6172989307181ab"
+  },
+  "assets/timeout_16k.pcm": {
+    "bytes": 41358,
+    "sha256": "f8960f74d368e0c0fd35b488134ca18799061b53017ff4d370e6a324ab01ee4b"
+  },
+  "assets/timeout_16k.wav": {
+    "bytes": 45454,
+    "sha256": "c3a0e76b267a08f62e107ba54f80fd5a0e141dad2bb3410a8f718b545c34cc79"
+  },
+  "assets/timeout_raw.aiff": {
+    "bytes": 61092,
+    "sha256": "79ef8ad052497199691a5ce8357c09577192d29ca6a8888f5a1038efb7218caf"
+  },
+  "debug/talk2gemi_v1.0-beta.elf": {
+    "bytes": 19479288,
+    "sha256": "62971e090687c704aa6ab0fab875f0e4c51f037166ee65a4184b384d80fdd73b"
+  },
+  "debug/talk2gemi_v1.0-beta.map": {
+    "bytes": 9921588,
+    "sha256": "e1265ae6be849c233b6fba69ed627c7d2dbacbec6516458638626b880de23f62"
+  },
+  "docs/2026-10-18-v1.0-beta-release.en.md": {
+    "bytes": 3275,
+    "sha256": "83dcce89b64411ba4c1cff4b68b593bbd6ee5518149f7d6417827fae4a2512f3"
+  },
+  "docs/2026-10-18-v1.0-beta-release.md": {
+    "bytes": 3085,
+    "sha256": "df4cb1040bfee6a312a265737bf1634e3996ec7e7276f5f5f5540b6dc02d0906"
+  },
+  "docs/new-mac.en.md": {
+    "bytes": 2189,
+    "sha256": "ffe7f407e6bfd6435ebea3c2514ca0cb78256bac0ea4d5b905b74592c869a4aa"
+  },
+  "docs/new-mac.zh_CN.md": {
+    "bytes": 2024,
+    "sha256": "3a4d546c4e4eec71e8ebdb8109acab313e29f35e0de9e679b1939074b63797a2"
+  },
+  "docs/next-version-status.md": {
+    "bytes": 2396,
+    "sha256": "b9bfe5c44f4f7fc0d08843aa6d5ffd9f92c8533a84f3676951422a0fea15460e"
+  },
+  "docs/next-version-status.zh_CN.md": {
+    "bytes": 2106,
+    "sha256": "09d9dacaeae4406a30985a113689e3702bf7604b00242b8f109ccb3a3aee94b5"
+  },
+  "docs/protocol-and-hardware.en.md": {
+    "bytes": 7395,
+    "sha256": "e7f1687d13ac4cf1c9988e55728c7e3d16c5fe4e6c564eaf5446bfae07e74ba8"
+  },
+  "docs/protocol-and-hardware.md": {
+    "bytes": 7950,
+    "sha256": "869285736e7865c25db10b42ab5a9d76e439e7adf89db7b17a5eaf946ab928ba"
+  },
+  "evidence/long_speech_acceptance.json": {
+    "bytes": 270,
+    "sha256": "c511355eac4e5aa20772c8deea3b4096b738024e567eb8ee99ff69858baf23ec"
+  },
+  "evidence/muse_backup.json": {
+    "bytes": 238,
+    "sha256": "48589cf907e01ad9af4b58e661491ebdc4abab02f3a0dd5de7e0903256ffe8f4"
+  },
+  "firmware/bootloader.bin": {
+    "bytes": 21024,
+    "sha256": "1e01e94767c5890a21ed2385a8fada77a9c4386c0b9dcb0ead64757fe7bbd83c"
+  },
+  "firmware/partition-table.bin": {
+    "bytes": 3072,
+    "sha256": "fd8026bff850ca0dee41c41305160317fffe604dda30a9bd5a701ac82d96fa17"
+  },
+  "firmware/talk2gemi_v1.0-beta.bin": {
+    "bytes": 2161712,
+    "sha256": "446d99097c7c0762fb59639aa2fdc1bc817d9875eb978630585eed049cb39a75"
+  },
+  "release.json": {
+    "bytes": 1268,
+    "sha256": "2d2fe5fa9bfd7530c43548406556a65f6627e11222a9434a14dd4a01711152be"
+  },
+  "scripts/backup_card.py": {
+    "bytes": 8883,
+    "sha256": "6e0e9e5f7f86e945113f1c283f238a436a55d09797580df39bdc5b121680e2a9"
+  },
+  "scripts/build_companion.sh": {
+    "bytes": 1179,
+    "sha256": "76b7a888405cc126e43b9deaee24f237614bbf73ad2a7968ec7b37e2b0bca7a2"
+  },
+  "scripts/build_firmware.sh": {
+    "bytes": 604,
+    "sha256": "f8e7f1f59e6ec249415a4fed5af732dbdafa69656491cfe8a92cae1bf57a0450"
+  },
+  "scripts/convert_owl_assets.py": {
+    "bytes": 3346,
+    "sha256": "28bf03cc4aaca6743862e7f14bc65137afc9b86bb59d50370534655cb72a65f5"
+  },
+  "scripts/flash_candidate.py": {
+    "bytes": 2266,
+    "sha256": "2403ce4f6a87146373a010c105d9ceb8cfe15c5844a6036ac0f75320944f8a1d"
+  },
+  "scripts/flash_firmware.sh": {
+    "bytes": 1495,
+    "sha256": "6f98513707deb3721d54aa9936cead4c4d54eb313c1aacd15cbde3f9aac40c89"
+  },
+  "scripts/idf_new_mac.sh": {
+    "bytes": 891,
+    "sha256": "a0e6819bee8e3462dab0fb0fd3992004cb012a18853b9146e7e88de937ea14af"
+  },
+  "scripts/local_signing_identity.py": {
+    "bytes": 2844,
+    "sha256": "205f2f25a1a4761136458cfa98611438b33a7609da0892f72ac4bcd9cfce0450"
+  },
+  "scripts/package_handoff.py": {
+    "bytes": 6387,
+    "sha256": "5385408069e6398fb96a1f201d65de1b3361d1dce846f50bae05dceaa23adbb0"
+  },
+  "scripts/package_mac.py": {
+    "bytes": 5304,
+    "sha256": "37484bbdf388a6bd7a8be49f17c77c4a9d5335db731bddeb6ee4a9628b4b2078"
+  },
+  "scripts/prepare_new_mac.py": {
+    "bytes": 4515,
+    "sha256": "3fe366cf0a5a1cc35b9842585da9d139d50dc0c2146ac483f1797fbfb5ebcbd8"
+  },
+  "scripts/python.sh": {
+    "bytes": 467,
+    "sha256": "549c8fc6f637b72ace43b35a0379d3c803cefa69c1eba774af542ecefa57cb13"
+  },
+  "scripts/serial_monitor.sh": {
+    "bytes": 597,
+    "sha256": "af8e74c33b1f72f3550523f08e7191f0394fcf9d048a729f52d6c93c16fd8154"
+  },
+  "scripts/start_companion.sh": {
+    "bytes": 255,
+    "sha256": "bce0d71c47a112b87c282edddce130cc47cdae190580365b1bbee9a161079cd5"
+  },
+  "scripts/start_server.sh": {
+    "bytes": 512,
+    "sha256": "6541ef220b5c3658683fdad8e4797c56a8d27e49b25aed175adedbb6c484316e"
+  },
+  "scripts/verify_migration.py": {
+    "bytes": 1900,
+    "sha256": "92bee6158ee2eff0fdf0fdb370ec8123f14b4226804143ebf826abe6312ffa76"
+  },
+  "scripts/verify_portable.py": {
+    "bytes": 3907,
+    "sha256": "8db68cde2e1309443b6f599a719aa997b974966c01771b076b2c1a0fe31cf8cb"
+  },
+  "server/benchmark_latency.py": {
+    "bytes": 9495,
+    "sha256": "f03c03bb9657754c901deb5f7e288077597c5c5fbfa33d0926c51ca7c7607b52"
+  },
+  "server/ble_bridge.py": {
+    "bytes": 13333,
+    "sha256": "7dcb0cdec348d02be5d9e25f03006169efc919ca51ea0820b2edd856f2cb2c28"
+  },
+  "server/ble_protocol.py": {
+    "bytes": 3125,
+    "sha256": "6fc32276257317a302e78b53948c99a4b3127ec498008db66ba292af78916e13"
+  },
+  "server/conversations.py": {
+    "bytes": 6017,
+    "sha256": "2d0bc8e099fe5cfb8e6b43ad4d8d008cc6c303110a4e2f085cb4afcfc3f723b2"
+  },
+  "server/credentials.py": {
+    "bytes": 1164,
+    "sha256": "0053af9a843e04fab8cf3d38c30aaf19434d599b0a0f3fb78f097a321842b18e"
+  },
+  "server/diagnose_ptt.py": {
+    "bytes": 4508,
+    "sha256": "1587fedfe07196f08ed180b3665ba89433d4e3e04201edb042fd993a4ba779ab"
+  },
+  "server/measure_voice_latency.py": {
+    "bytes": 8527,
+    "sha256": "58470a1ab15b0d56ecfa5142c52bbc593e07c87c3df5da5e44318856d9f7a94c"
+  },
+  "server/opus_downlink.py": {
+    "bytes": 1917,
+    "sha256": "44d8fb0a5a200a966e1a4091c565d3ef8f8df35308deeca171686f4caa7cfb45"
+  },
+  "server/relay_server.py": {
+    "bytes": 65490,
+    "sha256": "da5961e187aea04e07bbbb7e17320b7298817c824b702d2b5d39b20438b2867b"
+  },
+  "server/settings.py": {
+    "bytes": 1359,
+    "sha256": "0cb733563d399c2f21e74546abc1c6d7816f5f094da0358f0c8e52d6541ee4f8"
+  },
+  "server/static/dashboard.html": {
+    "bytes": 34778,
+    "sha256": "c0b3a68b8afb471dc52dc75f2911ad33feb7d1fa0662c281a0d8e44bca6ca488"
+  },
+  "server/static/history.html": {
+    "bytes": 5317,
+    "sha256": "ec8ff923658ea87420bfeb476da0a2e8f74fa2fd14dedf063892e2d050954ef0"
+  },
+  "server/test_ble_stream.py": {
+    "bytes": 2545,
+    "sha256": "79d5d8fbd13f8b0bfd8be35977cf998277103ff87f85300d11773fbe2eac524c"
+  },
+  "server/test_client.py": {
+    "bytes": 1879,
+    "sha256": "6ae65facafc36e48193478ffc440cc366a228b1269e1b51871612a98399d73a5"
+  },
+  "server/test_codec_interop.py": {
+    "bytes": 2756,
+    "sha256": "9188f05d8ee29f52297712237f6a00aa1ecf1441476fb1401d6bc33c8fdb1166"
+  },
+  "server/test_conversations.py": {
+    "bytes": 6295,
+    "sha256": "3257bcfb35affac2ab5c2eef7f3ac76ed52369fb08bbe7bbfd0f6dd39f0a1112"
+  },
+  "server/test_credentials.py": {
+    "bytes": 1078,
+    "sha256": "9bef4c347816f153acad13ea25fc4b301a5e818cdf80ab5c80dcc828a2e6ab90"
+  },
+  "server/test_opus_downlink.py": {
+    "bytes": 2985,
+    "sha256": "5186f06082dcba5128e202265ca85b3b11ef3353a2f2d6a5a0b9fec5e38d238f"
+  },
+  "server/test_ptt_protocol.py": {
+    "bytes": 5464,
+    "sha256": "d40c868bb8b65026b2e84e9035d50b99159d34078d6eebcba7f412784d65fed3"
+  },
+  "server/test_safety.py": {
+    "bytes": 1516,
+    "sha256": "6465fa17cb87573b017baf2c465ad60e456bd7d49f00fcb57d1b316788b592de"
+  },
+  "server/test_transport.py": {
+    "bytes": 18703,
+    "sha256": "db83f0125e1ba07a4d413a4a8a18d772129b6b0a1ad7c475c2d7847ed4bd4e8d"
+  },
+  "server/verify_ptt_relay.py": {
+    "bytes": 3501,
+    "sha256": "b1e69614ac22a53e7df77836c1ab1213822c78039dce619e0f08178158137e79"
+  },
+  "source/firmware/CMakeLists.txt": {
+    "bytes": 354,
+    "sha256": "d0d6a4dcc5d5ef89d4debdf87de502e2e7091663e412c1ea158b9712e73580a9"
+  },
+  "source/firmware/main/CMakeLists.txt": {
+    "bytes": 600,
+    "sha256": "fdf0a93e70248b5c5c3becb2040b751ab16f38828a9e792f970c90e26e82e408"
+  },
+  "source/firmware/main/Kconfig.projbuild": {
+    "bytes": 335,
+    "sha256": "db89d7b417dcb542f6a148b2409eebeb1b81d483fd63a7a5141a65897ceed4a5"
+  },
+  "source/firmware/main/app.c": {
+    "bytes": 18698,
+    "sha256": "e3edc202daef4857295731b1061532a33c14cae7cb2a44086ae0c031b08b58df"
+  },
+  "source/firmware/main/app.h": {
+    "bytes": 728,
+    "sha256": "2ea237f937a2777eefb4adc60678b25772ad2c381c498b080c946cff8d7e4769"
+  },
+  "source/firmware/main/audio_stream.c": {
+    "bytes": 6172,
+    "sha256": "0574314e0a4dd99a76c8603cbbae0342996b1c3a5451d75d5e4bd93237341791"
+  },
+  "source/firmware/main/audio_stream.h": {
+    "bytes": 667,
+    "sha256": "9c91c81d65d2538b1e17e85953de55fe3fe1efdb422ff369ed857964d30c9c32"
+  },
+  "source/firmware/main/ble_link.c": {
+    "bytes": 18983,
+    "sha256": "5dda554454fc9f1cbf2f42446666a54084a95b9a8cff8a6f233ba5a532c94957"
+  },
+  "source/firmware/main/ble_link.h": {
+    "bytes": 656,
+    "sha256": "76f8c9f8cb62c1881a772bc4b0ae43a4f490dd145cfdce5cbc30a0057922ad66"
+  },
+  "source/firmware/main/coc_probe.c": {
+    "bytes": 5479,
+    "sha256": "81348b08e94c63d7c8f7e1d3078b9a22ddf04fb1a34fa8caec492a535f944577"
+  },
+  "source/firmware/main/coc_probe.h": {
+    "bytes": 112,
+    "sha256": "9c8d380e9e16a01562e0e6ec7b93b0f7db648891aceb911d2ade9b07dc08603e"
+  },
+  "source/firmware/main/idf_component.yml": {
+    "bytes": 81,
+    "sha256": "d07f69c04887496073403a8bb6d47571215cf735907dbae9cb9c236ca47a2577"
+  },
+  "source/firmware/main/idle_policy.h": {
+    "bytes": 1109,
+    "sha256": "95eb3c94fdd934ed39584d37d496c10eea8eae314d0a4fff45ac93f242429c1e"
+  },
+  "source/firmware/main/ima_codec.c": {
+    "bytes": 2027,
+    "sha256": "3238bf1be7322baed5fd1d328189c425c2ba7e354a25fbf77f15d6da9d6e6dbd"
+  },
+  "source/firmware/main/ima_codec.h": {
+    "bytes": 297,
+    "sha256": "0e1368303d87f1a6672f0219c2d584e8240a146a952da74a1570e986e7030604"
+  },
+  "source/firmware/main/main.c": {
+    "bytes": 1307,
+    "sha256": "04a6db334a9dff8d2cbc5047c5beceb6635971c6c1d989a1bb74b3b914763bf9"
+  },
+  "source/firmware/main/owl_assets.c": {
+    "bytes": 1546898,
+    "sha256": "1b3d5be79061aae938886d7abd4a8ecbbec0d831dcc2c5d5f0b3f8e08f4ccf20"
+  },
+  "source/firmware/main/owl_assets.h": {
+    "bytes": 74,
+    "sha256": "a1f809516e9bf9c5e509861d4b94485f7aa016346b787248ce5db2f6d3d8efcd"
+  },
+  "source/firmware/main/transport.c": {
+    "bytes": 5248,
+    "sha256": "6159ef50c6b173da02633a98619ab8382ad1edca6f1881ecd5712304114a18f5"
+  },
+  "source/firmware/main/transport.h": {
+    "bytes": 434,
+    "sha256": "f3ddbbcd3994a423095b12b6b8f0e82a374144afaffb30e7f984afe9c798e967"
+  },
+  "source/firmware/main/ui.c": {
+    "bytes": 7286,
+    "sha256": "5e67a520c60d066949dfcbb567c0de75dd4cdd966ed2ef3bdce477593a31ad81"
+  },
+  "source/firmware/main/ui.h": {
+    "bytes": 989,
+    "sha256": "0e4a5b3d6ffe170737f1472ebee49004cdc92add67747d2cedc60b1ed3db1297"
+  },
+  "source/firmware/main/ui_icons.h": {
+    "bytes": 1395,
+    "sha256": "68f954791137291973ec4661375ef732d5f8af0784c8fca53afef022ebce1358"
+  },
+  "source/firmware/main/usb_diagnostics.c": {
+    "bytes": 3250,
+    "sha256": "d630b4f362d331f9fc83a4d6b181f174a67ea7c2bf04ea89991a2089ce6b4c7a"
+  },
+  "source/firmware/main/wifi_portal.c": {
+    "bytes": 13915,
+    "sha256": "559e121536cac3d22074592816ac2024bae348f7c0e9f06d42f24bd2ebd9521c"
+  },
+  "source/firmware/main/wifi_portal.h": {
+    "bytes": 1054,
+    "sha256": "062700080d6a79fdcc146035cd7b628d32ad333e32da1a7f8826c92a2d6311ea"
+  },
+  "source/firmware/main/ws_client.c": {
+    "bytes": 2907,
+    "sha256": "b472726acaa6480f44562a8c49f374375ca2b89985357d002cd36e1ebc14ed9f"
+  },
+  "source/firmware/main/ws_client.h": {
+    "bytes": 594,
+    "sha256": "0cb5ef84cd53624c4839295fdbe25b4a009f4e2a7a85aac7eccf3da4371f4ddd"
+  },
+  "source/firmware/partitions.csv": {
+    "bytes": 182,
+    "sha256": "b9f72eb39128fb194b727c3a26060630d691147f0bed3a4ea376caa8e1c6bc9b"
+  },
+  "source/firmware/sdkconfig.defaults": {
+    "bytes": 1921,
+    "sha256": "e3ce27b77951e66ad337b3abd1a517d81112f8e55b2811a65fa920bd43ee9f27"
+  },
+  "source/mac/Info.plist": {
+    "bytes": 994,
+    "sha256": "b35ea891da64feda273b174dd7679ce40efe107e629f6ebcb6fd22f3bc6cde73"
+  },
+  "source/mac/Keychain.swift": {
+    "bytes": 2783,
+    "sha256": "312c141333713bd821d53d304b099e4f3e211acd45c3948d9747f38a84447cef"
+  },
+  "source/mac/Talk2Gemi.swift": {
+    "bytes": 26037,
+    "sha256": "6e28374840cc2f0ae85001e0c10d127cb256b21de94969d982c42457333b436a"
+  },
+  "source/mac/main.swift": {
+    "bytes": 142,
+    "sha256": "a3d955b29c621aab6ceecd7d32e0c58106580b206c77edcc49d536bf0209598e"
+  },
+  "source/mac/owl_status.png": {
+    "bytes": 182,
+    "sha256": "1ab5d3c18d61dbe1c7f0e1fc09ce9d6dd2f2a6cc6ee566c3fb3961e71ebc76d4"
+  },
+  "source/mac/owl_status@2x.png": {
+    "bytes": 244,
+    "sha256": "7e2b3343c07e153f1f72379ddf70b00f3955f4b6aae9df268b85069650fa3a67"
+  }
+}

@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>talk2gemi 监控控制台 | Mac Relay Monitor</title>
+  <style>
+    :root {
+      --bg-base: #090d16;
+      --bg-surface: #111726;
+      --bg-card: rgba(19, 26, 42, 0.75);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(255, 255, 255, 0.18);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-primary: #38bdf8;
+      --accent-ready: #10b981;
+      --accent-warn: #f59e0b;
+      --accent-purple: #8b5cf6;
+      --accent-danger: #ef4444;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(at 10% 10%, rgba(56, 189, 248, 0.07) 0px, transparent 50%),
+        radial-gradient(at 90% 80%, rgba(139, 92, 246, 0.07) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: linear-gradient(to right, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text p {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .header-pills {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+    }
+
+    .pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
+
+    .pill .dot.live {
+      background: var(--accent-ready);
+      box-shadow: 0 0 8px var(--accent-ready);
+      animation: pulse 2s infinite;
+    }
+
+    /* Hero Banner: Current State */
+    .hero-state-banner {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .hero-state-banner::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--accent-ready);
+      transition: background 0.3s ease;
+    }
+
+    .hero-state-banner.state-idle::before { background: var(--accent-ready); }
+    .hero-state-banner.state-listening::before { background: var(--accent-warn); }
+    .hero-state-banner.state-thinking::before { background: var(--accent-primary); }
+    .hero-state-banner.state-speaking::before { background: var(--accent-purple); }
+    .hero-state-banner.state-completed::before { background: var(--accent-ready); }
+    .hero-state-banner.state-error::before { background: var(--accent-danger); }
+
+    .state-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .state-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .state-badge-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-ready);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+      transition: all 0.3s;
+    }
+
+    .state-info h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .state-badge-tag {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      font-family: var(--font-mono);
+      font-weight: normal;
+    }
+
+    .state-info p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* Waveform visualizer */
+    .audio-visualizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 48px;
+      padding: 4px 10px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .bar {
+      width: 5px;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--text-dim);
+      transition: height 0.1s ease, background-color 0.2s;
+    }
+
+    .active-wave .bar {
+      background: var(--accent-primary);
+      animation: wave 1s infinite ease-in-out;
+    }
+
+    .active-wave.speaking .bar {
+      background: var(--accent-purple);
+      animation: wave 0.8s infinite ease-in-out;
+    }
+
+    .active-wave .bar:nth-child(1) { animation-delay: 0.0s; }
+    .active-wave .bar:nth-child(2) { animation-delay: 0.15s; }
+    .active-wave .bar:nth-child(3) { animation-delay: 0.3s; }
+    .active-wave .bar:nth-child(4) { animation-delay: 0.45s; }
+    .active-wave .bar:nth-child(5) { animation-delay: 0.2s; }
+    .active-wave .bar:nth-child(6) { animation-delay: 0.5s; }
+    .active-wave .bar:nth-child(7) { animation-delay: 0.1s; }
+    .active-wave .bar:nth-child(8) { animation-delay: 0.35s; }
+
+    /* Grid layout */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 992px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-online {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-offline {
+      background: rgba(148, 163, 184, 0.15);
+      color: #94a3b8;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .badge-busy {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .meta-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .meta-label {
+      color: var(--text-muted);
+    }
+
+    .meta-value {
+      font-family: var(--font-mono);
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    /* Subtitle & Conversation Panel */
+    .convo-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    .convo-bubbles {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .bubble {
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      position: relative;
+    }
+
+    .bubble-user {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-left: 4px solid var(--accent-primary);
+    }
+
+    .bubble-model {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-left: 4px solid var(--accent-purple);
+    }
+
+    .bubble-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .bubble-user .bubble-header { color: var(--accent-primary); }
+    .bubble-model .bubble-header { color: var(--accent-purple); }
+
+    .bubble-text {
+      color: var(--text-main);
+      line-height: 1.6;
+      word-break: break-word;
+      font-size: 15px;
+    }
+
+    .bubble-empty {
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* Timeline Log */
+    .logs-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+    }
+
+    .logs-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .logs-box {
+      background: #060910;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      height: 220px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 10px;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+
+    .log-time { color: var(--text-dim); flex-shrink: 0; }
+    .log-tag { font-weight: bold; flex-shrink: 0; }
+    .log-tag.DEVICE { color: #38bdf8; }
+    .log-tag.GEMINI { color: #c084fc; }
+    .log-tag.PTT { color: #fbbf24; }
+    .log-tag.STATE { color: #34d399; }
+    .log-tag.WARN { color: #f87171; }
+    .log-msg { word-break: break-all; }
+
+    /* Controls & Testing toolbox */
+    .toolbox {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--border-bright);
+    }
+
+    .btn-primary {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+    }
+
+    .btn-primary:hover {
+      background: rgba(56, 189, 248, 0.35);
+    }
+
+    .input-group {
+      display: flex;
+      flex: 1;
+      min-width: 280px;
+      gap: 8px;
+    }
+
+    .input-text {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .input-text:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.95); }
+    }
+
+    @keyframes wave {
+      0%, 100% { height: 8px; }
+      50% { height: 38px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🎙️</div>
+        <div class="brand-text">
+          <h1>talk2gemi 监控控制台</h1>
+          <p>AI Passport ↔ Mac Relay ↔ Google Gemini Live (3.8)</p>
+        </div>
+      </div>
+      <div class="header-pills">
+        <div class="pill">
+          <span class="dot live" id="ws-status-dot"></span>
+          <span id="ws-status-text">Web 监控已连接</span>
+        </div>
+        <div class="pill">
+          <span>Relay:</span>
+          <strong id="relay-addr">--</strong>
+        </div>
+        <div class="pill">
+          <span>在线时长:</span>
+          <strong id="server-uptime">00:00:00</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero State Banner -->
+    <section class="hero-state-banner state-idle" id="hero-banner">
+      <div class="state-content">
+        <div class="state-left">
+          <div class="state-badge-icon" id="hero-icon">🟢</div>
+          <div class="state-info">
+            <h2 id="hero-title">
+              待机中 (Ready / Standby)
+              <span class="state-badge-tag" id="hero-tag">IDLE</span>
+            </h2>
+            <p id="hero-desc">设备就绪，按住 AI Passport 机身 [OK] 键开始实时说话</p>
+          </div>
+        </div>
+
+        <div class="audio-visualizer" id="audio-wave">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grid 3 Cards -->
+    <div class="grid-3">
+      <!-- Card 1: Device -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📱 硬件终端 (AI Passport)</div>
+          <span class="badge badge-offline" id="device-badge">未连接</span>
+        </div>
+        <div class="meta-list">
+          <div class="meta-item">
+            <span class="meta-label">设备 IP</span>
+            <span class="meta-value" id="device-ip">--</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">按键模式</span>
+            <span class="meta-value">PTT [OK] 单键对讲</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">音频编解码</span>
+            <span class="meta-value" id="device-codec">下行 Opus / 上行 ADPCM (16kHz)</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">麦克风上传</span>
+            <span class="meta-value" id="device-rx-bytes">0 KB (0 块)</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">扬声器播放</span>
+            <span class="meta-value" id="device-tx-bytes">0 KB (0 块)</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">最后交互</span>
+            <span class="meta-value" id="device-last-seen">无记录</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Gemini Live -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🧠 Gemini Live 引擎</div>
+          <span class="badge badge-online" id="gemini-badge">长连接就绪</span>
+        </div>
+        <div class="meta-list">
+          <div class="meta-item">
+            <span class="meta-label">模型版本</span>
+            <span class="meta-value" id="gemini-model">gemini-3.8-live</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">交互模式</span>
+            <span class="meta-value">全双工 Audio Stream</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">参考声线</span>
+            <span class="meta-value" id="active-voice">--</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">重采样转换</span>
+            <span class="meta-value">24kHz ➔ 16kHz (audioop)</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">首字延迟</span>
+            <span class="meta-value" id="gemini-latency">--</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">API 鉴权</span>
+            <span class="meta-value" style="color: #34d399;"><span id="api-configured">--</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Relay Metrics -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚡ Mac 中继服务</div>
+          <span class="badge badge-online">Running</span>
+        </div>
+        <div class="meta-list">
+          <div class="meta-item">
+            <span class="meta-label">监听地址</span>
+            <span class="meta-value"><span id="listen-addr">--</span></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">局域网 IP</span>
+            <span class="meta-value" id="mac-ip">--</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">当前对话轮次</span>
+            <span class="meta-value" id="total-turns">0 次</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Web 监控客户端</span>
+            <span class="meta-value" id="active-dashboards">1 个</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">超时兜底音频</span>
+            <span class="meta-value" style="color: #34d399;">已预加载 (timeout_16k)</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">程序版本</span>
+            <span class="meta-value">talk2gemi 2.0-dev</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Dual Conversation Subtitles -->
+    <div class="convo-card">
+      <div class="card-header" style="margin-bottom: 0;">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div class="card-title">💬 实时双向对话字幕</div>
+          <a href="/history" class="btn btn-primary" style="text-decoration: none; padding: 5px 12px; font-size: 12px;">对话记录</a>
+        </div>
+        <span style="font-size: 12px; color: var(--text-dim);">中文转录显示在网页；设备使用英文界面</span>
+      </div>
+      <div class="convo-bubbles">
+        <div class="bubble bubble-user">
+          <div class="bubble-header">
+            <span>👤 用户提问 (AI Passport 麦克风录音)</span>
+            <span id="user-transcript-time">--:--:--</span>
+          </div>
+          <div class="bubble-text" id="user-transcript">
+            <span class="bubble-empty">等待用户按住 [OK] 说话...</span>
+          </div>
+        </div>
+
+        <div class="bubble bubble-model">
+          <div class="bubble-header">
+            <span>🤖 Gemini 3.8 Live 回复 (实时流式回答)</span>
+            <span id="model-transcript-time">--:--:--</span>
+          </div>
+          <div class="bubble-text" id="model-transcript">
+            <span class="bubble-empty">等待生成回复...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Interactive Toolbox -->
+      <div class="toolbox">
+        <label for="voice-select">声音</label>
+        <select id="voice-select" class="btn" onchange="changeVoice(this.value)">
+          <option>Aoede</option><option>Kore</option><option>Laomedeia</option><option selected>Sulafat</option>
+        </select>
+        <span class="pill" id="codec-active">音频编码：下行 Opus · 上行 ADPCM</span>
+        <label for="volume-control">音量</label>
+        <input id="volume-control" type="range" min="0" max="100" step="5" value="70" onchange="changeVolume(Number(this.value))" aria-label="设备音量">
+        <output id="volume-value">--%</output>
+        <span id="voice-status" role="status">当前音色：Sulafat</span>
+      </div>
+      <div class="toolbox">
+        <div class="input-group">
+          <input type="text" class="input-text" id="test-text-input" placeholder="输入测试文字，直接发送给 Gemini 并向终端播报...">
+          <button class="btn btn-primary" onclick="sendTestText()">发送测试</button>
+        </div>
+        <button class="btn" onclick="testTimeoutAudio()">⚠️ 测试超时提示音</button>
+        <button class="btn" onclick="clearLogs()">清空日志</button>
+      </div>
+    </div>
+
+    <!-- Timeline Event Log -->
+    <div class="logs-card">
+      <div class="logs-header">
+        <div class="card-title">📜 实时系统事件流</div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <label style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="auto-scroll" checked> 自动滚动
+          </label>
+        </div>
+      </div>
+      <div class="logs-box" id="logs-container">
+        <!-- Log lines dynamically injected here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State maps
+    const STATE_CONFIG = {
+      idle: {
+        title: "待机中 (Ready / Standby)",
+        tag: "IDLE",
+        desc: "设备就绪，按住 AI Passport 机身 [OK] 键开始实时说话",
+        icon: "🟢",
+        bannerClass: "state-idle",
+        waveClass: ""
+      },
+      ready: {
+        title: "待机中 (Ready / Standby)",
+        tag: "READY",
+        desc: "设备与 Gemini Live 已连接就绪，随时可以对讲",
+        icon: "🟢",
+        bannerClass: "state-ready",
+        waveClass: ""
+      },
+      listening: {
+        title: "收到语音 (Recording / Listening)",
+        tag: "RECORDING",
+        desc: "用户正在按住 [OK] 键说话，硬件 16kHz PCM 音频正在实时上传...",
+        icon: "🎙️",
+        bannerClass: "state-listening",
+        waveClass: "active-wave"
+      },
+      thinking: {
+        title: "发送语音 / 正在思考 (Thinking / Processing)",
+        tag: "THINKING",
+        desc: "按键松开，音频传输完毕，Gemini 3.8 Live 正在高速推理...",
+        icon: "⚡",
+        bannerClass: "state-thinking",
+        waveClass: ""
+      },
+      speaking: {
+        title: "正在语音回复 (Speaking / Streaming)",
+        tag: "SPEAKING",
+        desc: "Gemini 正在实时生成语音，Mac 正降采样并回传至设备扬声器...",
+        icon: "🔊",
+        bannerClass: "state-speaking",
+        waveClass: "active-wave speaking"
+      },
+      completed: {
+        title: "发送成功 / 轮次完成 (Turn Completed)",
+        tag: "COMPLETED",
+        desc: "Gemini 回复已播报完成，已返回待机状态",
+        icon: "✅",
+        bannerClass: "state-completed",
+        waveClass: ""
+      },
+      error: {
+        title: "网络超时 / 异常 (Timeout / Error)",
+        tag: "TIMEOUT",
+        desc: "连接超时或异常，已向终端下发超时提示音",
+        icon: "⚠️",
+        bannerClass: "state-error",
+        waveClass: ""
+      }
+    };
+
+    let ws = null;
+    let uptimeSeconds = 0;
+
+    function formatTime(date) {
+      return date.toTimeString().split(' ')[0];
+    }
+
+    function addLog(tag, message) {
+      const box = document.getElementById('logs-container');
+      const now = formatTime(new Date());
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `<span class="log-time">[${now}]</span><span class="log-tag ${tag}">[${tag}]</span><span class="log-msg">${escapeHtml(message)}</span>`;
+      box.appendChild(line);
+
+      if (document.getElementById('auto-scroll').checked) {
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function clearLogs() {
+      document.getElementById('logs-container').innerHTML = '';
+      addLog('STATE', '日志已清空');
+    }
+
+    function updateHeroState(stateKey) {
+      const cfg = STATE_CONFIG[stateKey] || STATE_CONFIG.idle;
+      const banner = document.getElementById('hero-banner');
+      banner.className = `hero-state-banner ${cfg.bannerClass}`;
+      document.getElementById('hero-icon').innerText = cfg.icon;
+      document.getElementById('hero-title').childNodes[0].nodeValue = cfg.title + " ";
+      document.getElementById('hero-tag').innerText = cfg.tag;
+      document.getElementById('hero-desc').innerText = cfg.desc;
+
+      const wave = document.getElementById('audio-wave');
+      wave.className = `audio-visualizer ${cfg.waveClass}`;
+    }
+
+    function connectDashboardWs() {
+      const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${proto}//${location.host}/ws/dashboard`;
+
+      document.getElementById('ws-status-text').innerText = '正在连接 Mac 服务...';
+      document.getElementById('ws-status-dot').className = 'dot';
+
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        document.getElementById('ws-status-text').innerText = 'Web 监控已实时连接';
+        document.getElementById('ws-status-dot').className = 'dot live';
+        addLog('STATE', 'Web 监控控制台 WebSocket 已连通 Mac 中继服务');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          handleServerEvent(data);
+        } catch (e) {
+          console.error('Invalid WS payload:', e);
+        }
+      };
+
+      ws.onclose = () => {
+        document.getElementById('ws-status-text').innerText = '连接断开，重连中...';
+        document.getElementById('ws-status-dot').className = 'dot';
+        setTimeout(connectDashboardWs, 2000);
+      };
+
+      ws.onerror = (err) => {
+        console.error('WS Error:', err);
+      };
+    }
+
+    function handleServerEvent(data) {
+      const type = data.type;
+
+      if (type === 'init' || type === 'stats') {
+        // 全量状态同步
+        if (data.server_uptime !== undefined) {
+          uptimeSeconds = data.server_uptime;
+        }
+        if (data.local_ip) {
+          document.getElementById('mac-ip').innerText = data.local_ip;
+          document.getElementById('relay-addr').innerText = `${data.local_ip}:${location.port || 80}`;
+        }
+        if (data.total_turns !== undefined) {
+          document.getElementById('total-turns').innerText = `${data.total_turns} 次`;
+        }
+        if (data.active_dashboards !== undefined) {
+          document.getElementById('active-dashboards').innerText = `${data.active_dashboards} 个`;
+        }
+
+        // 设备状态
+        if (data.device) {
+          const dev = data.device;
+          if (dev.telemetry && Number.isInteger(dev.telemetry.volume)) {
+            const value = dev.telemetry.volume;
+            if (document.activeElement !== document.getElementById('volume-control')) document.getElementById('volume-control').value = value;
+            document.getElementById('volume-value').textContent = value + '%';
+          }
+          const badge = document.getElementById('device-badge');
+          if (dev.connected) {
+            badge.className = 'badge badge-online';
+            badge.innerText = '已在线';
+            document.getElementById('device-ip').innerText = dev.ip || '--';
+          } else {
+            badge.className = 'badge badge-offline';
+            badge.innerText = '未连接';
+            document.getElementById('device-ip').innerText = '--';
+          }
+          if (dev.rx_bytes !== undefined) {
+            document.getElementById('device-rx-bytes').innerText = `${(dev.rx_bytes / 1024).toFixed(1)} KB (${dev.rx_chunks} 块)`;
+          }
+          if (dev.tx_bytes !== undefined) {
+            document.getElementById('device-tx-bytes').innerText = `${(dev.tx_bytes / 1024).toFixed(1)} KB (${dev.tx_chunks} 块)`;
+          }
+          if (dev.last_seen) {
+            document.getElementById('device-last-seen').innerText = dev.last_seen;
+          }
+        }
+
+        if (data.credentials) {
+          document.getElementById('api-configured').textContent = data.credentials.configured ? '已配置 · ' + data.credentials.source : '请在 T2G 菜单提供 API Key';
+        }
+        if (data.settings) {
+          document.getElementById('voice-select').value = data.settings.voice;
+          const activeCodec = (data.device?.downlink_codec || data.settings.downlink_codec || 'opus').toUpperCase();
+          const codecLabel = data.device?.transport === 'wifi'
+            ? '下行 PCM · 上行 PCM (Wi-Fi 16kHz)'
+            : `下行 ${activeCodec} · 上行 ADPCM`;
+          document.getElementById('codec-active').textContent = '音频编码：' + codecLabel;
+          const devCodecEl = document.getElementById('device-codec');
+          if (devCodecEl) devCodecEl.textContent = codecLabel + ' (16kHz)';
+          document.getElementById('active-voice').textContent = data.settings.voice;
+          document.getElementById('listen-addr').textContent = location.host;
+          const voiceStatus = document.getElementById('voice-status');
+          if (voiceStatus && data.gemini?.connected) {
+            voiceStatus.textContent = `当前音色：${data.settings.voice}（已就绪）`;
+          }
+        }
+        // Gemini 状态
+        if (data.gemini) {
+          const gem = data.gemini;
+          const badge = document.getElementById('gemini-badge');
+          if (gem.connected) {
+            badge.className = 'badge badge-online';
+            badge.innerText = '长连接就绪';
+          } else {
+            badge.className = 'badge badge-busy';
+            badge.innerText = '待命/重连中';
+          }
+          if (gem.latency != null) {
+            document.getElementById('gemini-latency').innerText = `${gem.latency} ms`;
+          }
+        }
+
+        if (data.current_state) {
+          updateHeroState(data.current_state);
+        }
+      }
+
+      else if (type === 'state') {
+        const stateKey = data.value;
+        updateHeroState(stateKey);
+        addLog('STATE', `当前状态切换为: [${stateKey.toUpperCase()}]`);
+      }
+
+      else if (type === 'transcript') {
+        const now = formatTime(new Date());
+        if (data.role === 'user') {
+          document.getElementById('user-transcript-time').innerText = now;
+          document.getElementById('user-transcript').innerText = data.text;
+          addLog('PTT', `用户提问转录: "${data.text}"`);
+        } else if (data.role === 'model') {
+          document.getElementById('model-transcript-time').innerText = now;
+          document.getElementById('model-transcript').innerText = data.text;
+          addLog('GEMINI', `Gemini 回复转录: "${data.text}"`);
+        }
+      }
+
+      else if (type === 'event') {
+        addLog(data.category || 'INFO', data.message);
+      }
+    }
+
+    async function sendTestText() {
+      const input = document.getElementById('test-text-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      addLog('STATE', `触发测试文本发送: "${text}"`);
+      try {
+        const resp = await fetch('/api/test_prompt', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({text: text})
+        });
+        const res = await resp.json();
+        if (res.ok) {
+          input.value = '';
+          addLog('GEMINI', '测试文本已送入 Gemini Live 处理');
+        } else {
+          addLog('WARN', '发送测试失败: ' + res.error);
+        }
+      } catch (e) {
+        addLog('WARN', '请求失败: ' + e);
+      }
+    }
+
+    async function testTimeoutAudio() {
+      addLog('STATE', '请求向设备端播发"网络超时"提示音测试...');
+      try {
+        const resp = await fetch('/api/test_timeout', {method: 'POST'});
+        const res = await resp.json();
+        if (res.ok) {
+          addLog('DEVICE', '网络超时提示音频推流完成');
+        } else {
+          addLog('WARN', '播放测试失败: ' + res.error);
+        }
+      } catch (e) {
+        addLog('WARN', '请求失败: ' + e);
+      }
+    }
+
+    // Uptime tick
+    setInterval(() => {
+      uptimeSeconds++;
+      const hrs = String(Math.floor(uptimeSeconds / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((uptimeSeconds % 3600) / 60)).padStart(2, '0');
+      const secs = String(uptimeSeconds % 60).padStart(2, '0');
+      document.getElementById('server-uptime').innerText = `${hrs}:${mins}:${secs}`;
+    }, 1000);
+
+    // Init
+    window.addEventListener('load', () => {
+      connectDashboardWs();
+    });
+    async function changeVolume(volume) {
+      const output = document.getElementById('volume-value');
+      try {
+        const response = await fetch('/api/volume', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({volume})});
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || '调整失败');
+        output.textContent = volume + '% · 等待设备确认';
+      } catch (error) { output.textContent = error.message; }
+    }
+    async function changeVoice(voice) {
+      const status = document.getElementById('voice-status');
+      status.textContent = `正在切换为 ${voice}...`;
+      try {
+        const response = await fetch('/api/settings', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({voice})});
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || '保存失败');
+        status.textContent = result.pending
+          ? `已保存 ${result.voice}，本轮对话结束后自动切换`
+          : `正在建立 ${result.voice} 云端会话...`;
+      } catch (error) { status.textContent = error.message; }
+    }
+  </script>
+</body>
+</html>

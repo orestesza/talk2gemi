@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+dist/
+
+# Secrets and local user state
+.env
+*.pem
+*.key
+conversations.db*
+bridge_token.txt
+
+# ESP-IDF & Swift intermediate build artifacts
+build/
+build-*/
+managed_components/
+sdkconfig.old
+mac/build/
+
+# Runtime and scratch
+.runtime/
+.migration-envs/
+candidates/
+snapshots/
+scratch/
+
+# Agent configuration files (not for release)
+AGENTS.md
+**/AGENTS.md

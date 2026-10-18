@@ -1,0 +1,9 @@
+menu "talk2gemi"
+config TALK2GEMI_USB_DIAGNOSTICS
+    bool "Enable local USB test console (development only)"
+    default n
+    help
+        Allows bounded connection commands and injection of supplied PCM samples
+        over the physical USB console. Never starts the microphone. Disable for
+        accepted release builds.
+endmenu
