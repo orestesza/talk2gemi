@@ -14,11 +14,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "dns_server.h"
 
 static const char *TAG = "wifi_portal";
-
-static dns_server_handle_t s_dns_server = NULL;
 
 #define NVS_NAMESPACE "talk2gemi"
 #define DEFAULT_PORT 8765
@@ -324,20 +321,7 @@ esp_err_t wifi_portal_start_ap_web(void)
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    // Configure DHCP Option 114 (Captive Portal Identification RFC 8910)
-    const char *captive_url = "http://192.168.4.1/";
-    esp_netif_dhcps_stop(s_ap_netif);
-    esp_netif_dhcps_option(s_ap_netif, ESP_NETIF_OP_SET, ESP_NETIF_CAPTIVEPORTAL_URI, (void*)captive_url, strlen(captive_url));
-    esp_netif_dhcps_start(s_ap_netif);
-
     if (s_cb) s_cb(WIFI_STATUS_AP_MODE, "Talk2Gemi-Setup");
-
-    // Start DNS server to redirect all DNS queries to softAP IP
-    if (!s_dns_server) {
-        dns_server_config_t dns_cfg = DNS_SERVER_CONFIG_SINGLE("*", "WIFI_AP_DEF");
-        s_dns_server = start_dns_server(&dns_cfg);
-        ESP_LOGI(TAG, "Captive portal DNS server started");
-    }
 
     if (!s_httpd) {
         esp_log_level_set("httpd_uri", ESP_LOG_WARN);
