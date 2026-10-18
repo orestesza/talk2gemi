@@ -175,17 +175,19 @@ static void handle_key(key_event_t key){
     }
     if(key.event==BSP_BTN_CLICK||key.event==BSP_BTN_DOUBLE)return;
     app_activity();
-    if(key.event==BSP_BTN_PRESS){long_key=false;if(!page&&key.button==BSP_BTN_OK)audio_stream_set_recording(true);return;}
+    if(key.event==BSP_BTN_PRESS){long_key=false;if(!page&&state!=UI_STATE_WIFI_SETUP&&key.button==BSP_BTN_OK)audio_stream_set_recording(true);return;}
     if(key.event==BSP_BTN_LONG){
         long_key=true;
+        if(state==UI_STATE_WIFI_SETUP){if(key.button==BSP_BTN_UP)esp_restart();return;}
         if(key.button==BSP_BTN_UP){if(!page){page=1;status_page=0;}else home();}
         else if(key.button==BSP_BTN_DOWN&&!page){page=2;selection=0;}
         return;
     }
     if(key.event!=BSP_BTN_RELEASE)return;
-    if(!page&&key.button==BSP_BTN_OK){audio_stream_set_recording(false);return;}
+    if(!page&&state!=UI_STATE_WIFI_SETUP&&key.button==BSP_BTN_OK){audio_stream_set_recording(false);return;}
     if(long_key)return;
-    if(!page){if(key.button==BSP_BTN_UP)volume_change(5);if(key.button==BSP_BTN_DOWN)volume_change(-5);}
+    if(!page&&state!=UI_STATE_WIFI_SETUP){if(key.button==BSP_BTN_UP)volume_change(5);if(key.button==BSP_BTN_DOWN)volume_change(-5);}
+    else if(!page&&state==UI_STATE_WIFI_SETUP){}
     else if(page==1){if(key.button==BSP_BTN_UP)status_page=(status_page+2)%3;else if(key.button==BSP_BTN_DOWN)status_page=(status_page+1)%3;else home();}
     else if(key.button==BSP_BTN_OK)confirm();
     else {int n=menu_count();if(n>0)selection=(selection+(key.button==BSP_BTN_UP?n-1:1))%n;}

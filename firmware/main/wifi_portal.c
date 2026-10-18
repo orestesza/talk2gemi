@@ -14,8 +14,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "dns_server.h"
 
 static const char *TAG = "wifi_portal";
+
+static dns_server_handle_t s_dns_server = NULL;
 
 #define NVS_NAMESPACE "talk2gemi"
 #define DEFAULT_PORT 8765
@@ -195,38 +198,62 @@ static void url_decode(char *dst, const char *src, size_t dst_len) {
 
 static esp_err_t http_root_handler(httpd_req_t *req)
 {
-    const char *html = 
-        "<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-        "<title>talk2gemi Setup</title>"
+    char *html = (char *)malloc(3072);
+    if (!html) return ESP_ERR_NO_MEM;
+
+    snprintf(html, 3072,
+        "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+        "<meta name='viewport' content='width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no'>"
+        "<title>Talk2Gemi Setup</title>"
         "<style>"
-        "body{font-family:-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:20px;margin:0;}"
-        ".card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;max-width:380px;margin:30px auto;box-shadow:0 8px 24px rgba(0,0,0,0.6);}"
-        "h2{color:#58a6ff;margin-top:0;text-align:center;font-size:22px;letter-spacing:1px;}"
-        "label{display:block;margin-top:16px;font-size:13px;color:#8b949e;font-weight:600;}"
-        "input{width:100%;box-sizing:border-box;padding:12px;margin-top:6px;border-radius:6px;border:1px solid #30363d;background:#0d1117;color:#fff;font-size:15px;}"
-        "input:focus{border-color:#58a6ff;outline:none;}"
-        "button{width:100%;margin-top:28px;padding:14px;background:#238636;color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:bold;cursor:pointer;}"
-        "button:hover{background:#2ea043;}"
-        ".hint{font-size:12px;color:#8b949e;margin-top:20px;text-align:center;line-height:1.5;}"
+        "* { box-sizing: border-box; margin: 0; padding: 0; }"
+        "body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; }"
+        ".card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; max-width: 400px; margin: 10px auto; box-shadow: 0 8px 24px rgba(0,0,0,0.6); }"
+        "h2 { color: #58a6ff; text-align: center; font-size: 20px; margin-bottom: 4px; }"
+        ".sub { color: #8b949e; text-align: center; font-size: 13px; margin-bottom: 16px; }"
+        "label { display: block; margin-top: 14px; font-size: 13px; color: #8b949e; font-weight: 600; }"
+        "input { width: 100%%; padding: 12px; margin-top: 6px; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: #fff; font-size: 15px; }"
+        "input:focus { border-color: #58a6ff; outline: none; }"
+        "button { width: 100%%; margin-top: 24px; padding: 14px; background: #238636; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }"
+        "button:hover { background: #2ea043; }"
+        ".hint { font-size: 12px; color: #8b949e; margin-top: 16px; text-align: center; line-height: 1.5; }"
         "</style></head><body>"
         "<div class='card'>"
-        "<h2>talk2gemi Setup</h2>"
+        "<h2>talk2gemi 配网</h2>"
+        "<div class='sub'>Wi-Fi & Mac Relay Setup</div>"
         "<form method='POST' action='/save'>"
-        "<label>Wi-Fi Name (SSID)</label>"
-        "<input type='text' name='ssid' placeholder='e.g. MyHome_WiFi' required>"
-        "<label>Wi-Fi Password</label>"
-        "<input type='password' name='password' placeholder='Wi-Fi Password (leave blank if open)'>"
-        "<label>Mac Relay Server IP</label>"
-        "<input type='text' name='server_ip' placeholder='IP shown on your Mac' required>"
-        "<label>Relay Port</label>"
-        "<input type='number' name='server_port' value='8765' required>"
-        "<button type='submit'>Save & Connect</button>"
+        "<label>Wi-Fi 名称 (SSID)</label>"
+        "<input type='text' name='ssid' value='%s' placeholder='例如 MyHome_WiFi' required>"
+        "<label>Wi-Fi 密码 (Password)</label>"
+        "<input type='password' name='password' value='%s' placeholder='Wi-Fi 密码（无密码留空）'>"
+        "<label>Mac 电脑中继 IP (Relay Server IP)</label>"
+        "<input type='text' name='server_ip' value='%s' placeholder='Mac 客户端显示的局域网 IP' required>"
+        "<label>中继端口 (Relay Port)</label>"
+        "<input type='number' name='server_port' value='%d' required>"
+        "<button type='submit'>保存并连接 / Save & Connect</button>"
         "</form>"
-        "<div class='hint'>After saving, AI Passport will restart and connect to Wi-Fi and Mac server.</div>"
-        "</div></body></html>";
+        "<div class='hint'>保存后卡片将自动重启并连接 Wi-Fi 与 Mac 客户端。<br>After saving, device will reboot and connect.</div>"
+        "</div></body></html>",
+        s_ssid, s_pass, s_server_ip[0] ? s_server_ip : "", s_server_port > 0 ? s_server_port : DEFAULT_PORT);
 
     httpd_resp_set_type(req, "text/html");
-    return httpd_resp_send(req, html, HTTPD_RESP_USE_STRLEN);
+    esp_err_t res = httpd_resp_send(req, html, HTTPD_RESP_USE_STRLEN);
+    free(html);
+    return res;
+}
+
+static esp_err_t http_captive_redirect_handler(httpd_req_t *req)
+{
+    httpd_resp_set_status(req, "302 Found");
+    httpd_resp_set_hdr(req, "Location", "http://192.168.4.1/");
+    return httpd_resp_send(req, "Redirecting...", HTTPD_RESP_USE_STRLEN);
+}
+
+static esp_err_t http_404_redirect_handler(httpd_req_t *req, httpd_err_code_t err)
+{
+    httpd_resp_set_status(req, "302 Found");
+    httpd_resp_set_hdr(req, "Location", "http://192.168.4.1/");
+    return httpd_resp_send(req, "Redirecting...", HTTPD_RESP_USE_STRLEN);
 }
 
 static esp_err_t http_save_handler(httpd_req_t *req)
@@ -275,7 +302,7 @@ static esp_err_t http_save_handler(httpd_req_t *req)
 esp_err_t wifi_portal_start_ap_web(void)
 {
     s_setup_mode = true;
-    ESP_LOGI(TAG, "Starting SoftAP + Web Portal...");
+    ESP_LOGI(TAG, "Starting SoftAP + Captive Portal...");
     esp_wifi_stop();
 
     if (!s_ap_netif) {
@@ -297,11 +324,30 @@ esp_err_t wifi_portal_start_ap_web(void)
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
+    // Configure DHCP Option 114 (Captive Portal Identification RFC 8910)
+    const char *captive_url = "http://192.168.4.1/";
+    esp_netif_dhcps_stop(s_ap_netif);
+    esp_netif_dhcps_option(s_ap_netif, ESP_NETIF_OP_SET, ESP_NETIF_CAPTIVEPORTAL_URI, (void*)captive_url, strlen(captive_url));
+    esp_netif_dhcps_start(s_ap_netif);
+
     if (s_cb) s_cb(WIFI_STATUS_AP_MODE, "Talk2Gemi-Setup");
 
+    // Start DNS server to redirect all DNS queries to softAP IP
+    if (!s_dns_server) {
+        dns_server_config_t dns_cfg = DNS_SERVER_CONFIG_SINGLE("*", "WIFI_AP_DEF");
+        s_dns_server = start_dns_server(&dns_cfg);
+        ESP_LOGI(TAG, "Captive portal DNS server started");
+    }
+
     if (!s_httpd) {
+        esp_log_level_set("httpd_uri", ESP_LOG_WARN);
+        esp_log_level_set("httpd_txrx", ESP_LOG_WARN);
+        esp_log_level_set("httpd_parse", ESP_LOG_WARN);
+
         httpd_config_t config = HTTPD_DEFAULT_CONFIG();
         config.stack_size = 8192;
+        config.max_open_sockets = 7;
+        config.lru_purge_enable = true;
         if (httpd_start(&s_httpd, &config) == ESP_OK) {
             httpd_uri_t uri_get = {
                 .uri      = "/",
@@ -318,7 +364,29 @@ esp_err_t wifi_portal_start_ap_web(void)
                 .user_ctx = NULL
             };
             httpd_register_uri_handler(s_httpd, &uri_post);
-            ESP_LOGI(TAG, "HTTP Server started on 192.168.4.1:80");
+
+            // Android probes
+            httpd_uri_t uri_gen204 = { .uri = "/generate_204", .method = HTTP_GET, .handler = http_captive_redirect_handler };
+            httpd_register_uri_handler(s_httpd, &uri_gen204);
+
+            httpd_uri_t uri_gen204_alt = { .uri = "/gen_204", .method = HTTP_GET, .handler = http_captive_redirect_handler };
+            httpd_register_uri_handler(s_httpd, &uri_gen204_alt);
+
+            // Apple iOS/macOS probe
+            httpd_uri_t uri_apple = { .uri = "/hotspot-detect.html", .method = HTTP_GET, .handler = http_captive_redirect_handler };
+            httpd_register_uri_handler(s_httpd, &uri_apple);
+
+            // Windows probes
+            httpd_uri_t uri_win1 = { .uri = "/connecttest.txt", .method = HTTP_GET, .handler = http_captive_redirect_handler };
+            httpd_register_uri_handler(s_httpd, &uri_win1);
+
+            httpd_uri_t uri_win2 = { .uri = "/ncsi.txt", .method = HTTP_GET, .handler = http_captive_redirect_handler };
+            httpd_register_uri_handler(s_httpd, &uri_win2);
+
+            // Catch-all 404 handler redirects everything else
+            httpd_register_err_handler(s_httpd, HTTPD_404_NOT_FOUND, http_404_redirect_handler);
+
+            ESP_LOGI(TAG, "HTTP Server started on 192.168.4.1:80 with Captive Portal");
         }
     }
     return ESP_OK;

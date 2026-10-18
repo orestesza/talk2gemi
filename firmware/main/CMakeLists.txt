@@ -7,6 +7,8 @@ idf_component_register(
         "ima_codec.c"
         "usb_diagnostics.c"
         "wifi_portal.c"
+        "dns_server.c"
+        "qrcodegen.c"
         "ui.c"
         "owl_assets.c"
         "audio_stream.c"
