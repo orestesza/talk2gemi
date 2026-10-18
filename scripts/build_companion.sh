@@ -2,6 +2,7 @@
 set -euo pipefail
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$PROJECT_DIR/mac/build/talk2gemi.app"
+rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$PROJECT_DIR/.runtime" "$PROJECT_DIR/mac/build/module-cache"
 cp "$PROJECT_DIR/mac/Info.plist" "$APP/Contents/Info.plist"
 cp "$PROJECT_DIR/mac/owl_status.png" "$APP/Contents/Resources/owl_status.png"
