@@ -12,6 +12,7 @@
 static void wifi_status(wifi_portal_status_t status,const char *message){
     if(status==WIFI_STATUS_AP_MODE)app_set_state(UI_STATE_WIFI_SETUP,message);
     else if(status==WIFI_STATUS_CONNECTING&&!transport_connected())app_set_state(UI_STATE_WIFI_CONNECTING,message);
+    else if(status==WIFI_STATUS_CONNECTED&&!transport_connected())app_set_state(UI_STATE_BOOT,"Connecting to Mac...");
     else if(status==WIFI_STATUS_FAILED&&!transport_connected())app_set_state(UI_STATE_ERROR,"Wi-Fi failed; use settings");
 }
 void app_main(void){

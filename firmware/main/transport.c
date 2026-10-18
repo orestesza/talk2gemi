@@ -46,7 +46,7 @@ static void task(void *arg){
         wifi_ap_record_t ap;
         bool wifi_up=esp_wifi_sta_get_ap_info(&ap)==ESP_OK&&wifi_portal_get_sta_ip()[0];
         if(!wifi_up&&wifi_portal_has_config()&&!wifi_portal_is_setup()&&now>=next_wifi){
-            wifi_up=wifi_portal_connect_sta(1)==ESP_OK;
+            wifi_up=wifi_portal_connect_sta(10)==ESP_OK;
             next_wifi=now+(int64_t)wifi_backoff*1000000;
             wifi_backoff=wifi_backoff<60?wifi_backoff*2:60;
         }
@@ -59,7 +59,7 @@ static void task(void *arg){
             active=0;turn_open=false;audio_stream_set_recording(false);app_set_state(UI_STATE_ERROR,"Link lost. Please repeat.");
         }
         int preferred=app_settings.preference?app_settings.preference:(app_settings.last_transport?app_settings.last_transport:1);
-        if(!b&&app_settings.token[0]&&now>=next_ble){
+        if(!b&&app_settings.token[0]&&!wifi_portal_is_setup()&&now>=next_ble){
             ble_link_reconnect();next_ble=now+(int64_t)backoff*1000000;backoff=backoff<60?backoff*2:60;
         }
         if(!active&&!app_busy()){

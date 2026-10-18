@@ -42,6 +42,8 @@ static uint32_t turn;
 static bool have_sequence;
 static SemaphoreHandle_t tx_lock,wire_lock,write_done,frame_ack;
 static QueueHandle_t rx_queue;
+static TaskHandle_t rx_task_handle;
+static volatile bool ble_stopping;
 static uint8_t partial[MAX_FRAME];
 static size_t partial_len,partial_total;
 static uint16_t partial_id;
@@ -184,6 +186,7 @@ static int mtu_done(uint16_t h,const struct ble_gatt_error *error,uint16_t mtu,v
     return 0;
 }
 static void notification(const struct os_mbuf *om){
+    if(ble_stopping||!rx_queue)return;
     uint8_t data[512];int n=OS_MBUF_PKTLEN(om);if(n<6||n>sizeof(data)) {terminate();return;}
     os_mbuf_copydata(om,0,n,data);
     uint16_t id=le16(data),offset=le16(data+2),total=le16(data+4);
@@ -197,7 +200,7 @@ static void notification(const struct os_mbuf *om){
     if(have_sequence&&number!=expected_seq){terminate();return;}
     have_sequence=true;expected_seq=number+1;
     uint8_t packet[MAX_FRAME]={0};memcpy(packet,partial,total);
-    if(xQueueSend(rx_queue,packet,0)!=pdTRUE){app_set_state(UI_STATE_ERROR,"BLE receive buffer full");terminate();}
+    if(!ble_stopping&&rx_queue&&xQueueSend(rx_queue,packet,0)!=pdTRUE){app_set_state(UI_STATE_ERROR,"BLE receive buffer full");terminate();}
 }
 static int gap_event(struct ble_gap_event *ev,void *arg){
     (void)arg;
@@ -256,13 +259,13 @@ static void sync_cb(void){if(!ble_hs_id_infer_auto(0,&own_addr_type))synced=true
 static void host_task(void *arg){(void)arg;nimble_port_run();nimble_port_freertos_deinit();}
 static void receive_task(void *arg){
     (void)arg;uint8_t packet[MAX_FRAME+1];static int16_t pcm[960];
-    while(1){
+    while(!ble_stopping){
         if(hello_pending){
             hello_pending=false;
             char hello[256];snprintf(hello,sizeof(hello),"{\"type\":\"hello\",\"device_id\":\"%s\",\"token\":\"%s\",\"downlink_opus\":%s}",app_device_id(),app_settings.token,opus_available?"true":"false");
             ble_link_send_json(hello);
         }
-        if(xQueueReceive(rx_queue,packet,pdMS_TO_TICKS(50))!=pdTRUE)continue;
+        if(!rx_queue||xQueueReceive(rx_queue,packet,pdMS_TO_TICKS(50))!=pdTRUE)continue;
         size_t n=le16(packet+8);
         if(packet[1]==1){
             char *text=(char*)packet+10;text[n]=0;
@@ -288,6 +291,8 @@ static void receive_task(void *arg){
         }
         send_frame(3,NULL,0,le16(packet+6));
     }
+    rx_task_handle=NULL;
+    vTaskDelete(NULL);
 }
 esp_err_t ble_link_init(void){
     tx_lock=xSemaphoreCreateMutex();wire_lock=xSemaphoreCreateMutex();write_done=xSemaphoreCreateBinary();frame_ack=xSemaphoreCreateBinary();
@@ -309,7 +314,7 @@ esp_err_t ble_link_init(void){
     ble_hs_cfg.sm_their_key_dist=BLE_SM_PAIR_KEY_DIST_ENC|BLE_SM_PAIR_KEY_DIST_ID;
     ble_store_config_init();ble_att_set_preferred_mtu(247);
     nimble_port_freertos_init(host_task);
-    if(xTaskCreate(receive_task,"ble_audio",12288,NULL,4,NULL)!=pdPASS)return ESP_ERR_NO_MEM;
+    if(xTaskCreate(receive_task,"ble_audio",4096,NULL,4,&rx_task_handle)!=pdPASS)return ESP_ERR_NO_MEM;
     return ESP_OK;
 }
 void ble_link_scan(void){
@@ -329,8 +334,23 @@ void ble_link_connect(int i){
 void ble_link_reconnect(void){if(!app_settings.token[0])return;auto_reconnect=true;ble_link_scan();}
 void ble_link_forget(void){if(ready)ble_link_send_json("{\"type\":\"forget\"}");terminate();ble_store_clear();}
 bool ble_link_connected(void){return ready;}
-int ble_link_rssi(void){int8_t rssi;if(conn==BLE_HS_CONN_HANDLE_NONE||ble_gap_conn_rssi(conn,&rssi))return 0;return rssi;}
-void ble_link_stop(void){ble_gap_disc_cancel();terminate();nimble_port_stop();}
+int ble_link_rssi(void){int8_t rssi;if(!synced||conn==BLE_HS_CONN_HANDLE_NONE||ble_gap_conn_rssi(conn,&rssi))return 0;return rssi;}
+void ble_link_stop(void){
+    if(ble_stopping)return;
+    ble_stopping=true;
+    auto_reconnect=false;
+    if(synced){
+        ble_gap_disc_cancel();
+        terminate();
+    }
+    synced=false;
+    ready=false;
+    while(rx_task_handle)vTaskDelay(pdMS_TO_TICKS(20));
+    if(rx_queue){QueueHandle_t q=rx_queue;rx_queue=NULL;vQueueDelete(q);}
+    if(nimble_port_stop()==0){
+        nimble_port_deinit();
+    }
+}
 void ble_link_disconnect(void){auto_reconnect=false;terminate();}
 bool ble_link_confirm_pairing(int code){
     if(comparison_code<0||(code>=0&&code!=comparison_code))return false;

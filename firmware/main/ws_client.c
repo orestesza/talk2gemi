@@ -40,7 +40,8 @@ static void event(void *args,esp_event_base_t base,int32_t id,void *data_ptr){
 esp_err_t ws_client_start(const char *host,int port){
     if(client)return ESP_OK;
     char uri[256];snprintf(uri,sizeof(uri),"ws://%s:%d/ws/device?id=%s&host=%s",host,port,app_device_id(),app_settings.host_id);
-    esp_websocket_client_config_t cfg={.uri=uri,.buffer_size=2048,.reconnect_timeout_ms=5000,.network_timeout_ms=3000,.task_stack=4096};
+    ESP_LOGI("wifi_audio","Starting WebSocket to %s",uri);
+    esp_websocket_client_config_t cfg={.uri=uri,.buffer_size=2048,.reconnect_timeout_ms=5000,.network_timeout_ms=10000,.task_stack=4096};
     client=esp_websocket_client_init(&cfg);if(!client)return ESP_ERR_NO_MEM;
     esp_websocket_register_events(client,WEBSOCKET_EVENT_ANY,event,NULL);return esp_websocket_client_start(client);
 }

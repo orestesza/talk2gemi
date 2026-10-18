@@ -86,12 +86,12 @@ esp_err_t audio_stream_init(void){
     bsp_audio_set_volume(app_settings.volume);
     ptt_events=xQueueCreate(8,sizeof(bool));playback=xQueueCreate(4,sizeof(play_chunk_t));uplink=xQueueCreate(6,sizeof(uplink_t));
     if(!ptt_events||!playback||!uplink)return ESP_ERR_NO_MEM;
-    if(xTaskCreate(send_task,"audio_send",3072,NULL,4,&send_handle)!=pdPASS)return ESP_ERR_NO_MEM;
-    if(xTaskCreate(record_task,"capture",3072,NULL,5,&record_handle)!=pdPASS)return ESP_ERR_NO_MEM;
+    if(xTaskCreate(send_task,"audio_send",2048,NULL,4,&send_handle)!=pdPASS)return ESP_ERR_NO_MEM;
+    if(xTaskCreate(record_task,"capture",2048,NULL,5,&record_handle)!=pdPASS)return ESP_ERR_NO_MEM;
     if(xTaskCreate(play_task,"playback",2048,NULL,5,&play_handle)!=pdPASS)return ESP_ERR_NO_MEM;
     return ESP_OK;
 }
-void audio_stream_set_recording(bool active){if(ptt_events&&xQueueSend(ptt_events,&active,0)!=pdTRUE)app_set_state(UI_STATE_ERROR,"Button queue overflow");}
+void audio_stream_set_recording(bool active){if(!stopping&&ptt_events&&xQueueSend(ptt_events,&active,0)!=pdTRUE)app_set_state(UI_STATE_ERROR,"Button queue overflow");}
 esp_err_t audio_stream_play_chunk(const void *pcm,size_t bytes){
     if(stopping||!playback)return ESP_ERR_INVALID_STATE;
     const uint8_t *p=pcm;play_chunk_t chunk;
@@ -111,6 +111,12 @@ void audio_stream_log_stack_usage(void){
     }
 #endif
 }
-void audio_stream_stop(void){stopping=true;while(record_handle||play_handle||send_handle)vTaskDelay(pdMS_TO_TICKS(20));}
+void audio_stream_stop(void){
+    stopping=true;
+    while(record_handle||play_handle||send_handle)vTaskDelay(pdMS_TO_TICKS(20));
+    if(ptt_events){QueueHandle_t q=ptt_events;ptt_events=NULL;vQueueDelete(q);}
+    if(playback){QueueHandle_t q=playback;playback=NULL;vQueueDelete(q);}
+    if(uplink){QueueHandle_t q=uplink;uplink=NULL;vQueueDelete(q);}
+}
 
 void audio_stream_flush_playback(void){play_generation++;if(playback)xQueueReset(playback);}
