@@ -1294,13 +1294,25 @@ async def api_test_timeout_handler(request: web.Request):
 # 服务启动主入口
 # ======================================================================
 
+def _is_allowed_client(remote: str) -> bool:
+    if not remote:
+        return False
+    if remote in ("127.0.0.1", "::1", "localhost"):
+        return True
+    try:
+        import ipaddress
+        ip = ipaddress.ip_address(remote)
+        return ip.is_private or ip.is_loopback
+    except Exception:
+        return False
+
 async def history_page(request):
-    if request.remote not in ("127.0.0.1", "::1"):
-        raise web.HTTPForbidden(text="History is available on this Mac only")
+    if not _is_allowed_client(request.remote):
+        raise web.HTTPForbidden(text="History is available on private local network only")
     return web.FileResponse(STATIC_DIR / "history.html", headers={"Cache-Control":"no-store"})
 
 async def history_api(request):
-    if request.remote not in ("127.0.0.1", "::1"):
+    if not _is_allowed_client(request.remote):
         raise web.HTTPForbidden()
     session = hub.active_device_session
     store = conversation_store()

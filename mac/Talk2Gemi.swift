@@ -82,6 +82,7 @@ final class Companion: NSObject, NSApplicationDelegate, CBPeripheralManagerDeleg
         menu.addItem(statusLine)
         menu.addItem(NSMenuItem(title: "Open control panel", action: #selector(openPanel), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Conversation history", action: #selector(openHistory), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Restart relay service", action: #selector(restartRelay), keyEquivalent: "r"))
         menu.addItem(NSMenuItem(title: "Start relay service", action: #selector(startRelay), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Gemini API Key…", action: #selector(configureKey), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Start at login", action: #selector(toggleLogin(_:)), keyEquivalent: ""))
@@ -167,9 +168,37 @@ final class Companion: NSObject, NSApplicationDelegate, CBPeripheralManagerDeleg
             } else { try SMAppService.mainApp.register(); sender.state = .on }
         } catch { setStatus("Login item: \(error.localizedDescription)") }
     }
+    func killRelayProcesses() {
+        if let p = relay, p.isRunning {
+            p.terminate()
+        }
+        relay = nil
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/sh")
+        task.arguments = ["-c", "/usr/bin/pkill -9 -f relay_server.py; /usr/sbin/lsof -ti :8765 | /usr/bin/xargs /bin/kill -9 2>/dev/null || true"]
+        try? task.run()
+        task.waitUntilExit()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        killRelayProcesses()
+    }
+
+    @objc func restartRelay() {
+        setStatus("Restarting relay…")
+        socket?.cancel(with: .goingAway, reason: nil)
+        connected = false
+        killRelayProcesses()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+            self?.startRelay()
+        }
+    }
+
     @objc func quit() {
-        manager.stopAdvertising(); socket?.cancel(with: .goingAway, reason: nil)
-        relay?.terminate(); NSApp.terminate(nil)
+        manager.stopAdvertising()
+        socket?.cancel(with: .goingAway, reason: nil)
+        killRelayProcesses()
+        NSApp.terminate(nil)
     }
 
     func connect() {
